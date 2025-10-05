@@ -1,0 +1,1597 @@
+{
+  "name": "Reddit Scale content production",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Based on the Reddit post content: {{ $json['Content theme '] }} and {{ $json['Hooks and angles'] }}, generate **multiple content ideas** for each platform below that would help a **marketer who is just getting started with marketing automation and workflows**.\n\nThese ideas should be tool-specific (n8n, Make, Loops, Claude, ChatGPT), educational, and actionable. Do **not** combine all platform ideas in one block. Group and number them clearly by platform.\n\n---\n\n🎯 Output Format (Strictly follow this structure):\n\n📘 Column 1- **LinkedIn Post Ideas**\n1. [Idea] — Hook: [Hook] — Angle: [Angle]\n2. [Idea] — Hook: [Hook] — Angle: [Angle]\n3. [Idea] — Hook: [Hook] — Angle: [Angle]\n\n🐦 Column 2 - **X (Twitter) Post Ideas**\n1. [Idea] — Hook: [Hook] — Angle: [Angle]\n2. [Idea] — Hook: [Hook] — Angle: [Angle]\n3. [Idea] — Hook: [Hook] — Angle: [Angle]\n\n📝 Column 3 - **Blog Post Ideas**\n1. [Title] — Hook: [Hook] — Angle: [Angle]\n2. [Title] — Hook: [Hook] — Angle: [Angle]\n3. [Title] — Hook: [Hook] — Angle: [Angle]\n\n📹 Column 4 - **YouTube Shorts Ideas**\n1. [Idea] — Hook: [Hook] — Angle: [Angle]\n2. [Idea] — Hook: [Hook] — Angle: [Angle]\n3. [Idea] — Hook: [Hook] — Angle: [Angle]\n\n---\n\n✅ Guardrails:\n- Generate 3 ideas per section\n- Ideas must be practical, tool-focused, and beginner-friendly\n- Avoid fluff and repetition"
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        -20,
+        420
+      ],
+      "id": "8be40d69-63a3-4f8c-b36e-ba9af455ee38",
+      "name": "Basic LLM Chain3"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "o3-mini",
+          "mode": "list",
+          "cachedResultName": "o3-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        80,
+        640
+      ],
+      "id": "c58a219e-016a-41d7-aed2-85450cddb60d",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "Hi02E391flxREeCL",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY",
+          "mode": "list",
+          "cachedResultName": "Reddit to x ideas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1566594335,
+          "mode": "list",
+          "cachedResultName": "Reddit posts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY/edit#gid=1566594335"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -300,
+        420
+      ],
+      "id": "698aeab2-c749-43e3-97a6-614ad98347d8",
+      "name": "Reddit analysis ",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Q2cp9Pj98wDxvTr5",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const text = item.json.text || '';\n\n  const extractSection = (labelKeyword) => {\n    const regex = new RegExp(`[\\\\*\\\\s]*[📘🐦📝📹]?[\\\\s\\\\*]*${labelKeyword}[\\\\s\\\\*]*\\\\n+([\\\\s\\\\S]*?)(?=\\\\n[\\\\*\\\\s]*[📘🐦📝📹]?[\\\\s\\\\*]*[A-Z].+?Ideas|\\\\n{2,}|$)`, 'i');\n    const match = text.match(regex);\n    return match ? match[1].trim() : '';\n  };\n\n  return {\n    json: {\n      linkedin_idea: extractSection('LinkedIn Post Ideas'),\n      x_post_idea: extractSection('X \\\\(Twitter\\\\) Post Ideas'),\n      blog_post_idea: extractSection('Blog Post Ideas'),\n      yt_short_idea: extractSection('YouTube Shorts Ideas'),\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        340,
+        420
+      ],
+      "id": "fa547bd6-dd14-47f6-9187-44010afded12",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {
+          "includeUnpaired": true
+        }
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        580,
+        140
+      ],
+      "id": "1492e01e-97b3-472b-9b40-1f51bddc5597",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY",
+          "mode": "list",
+          "cachedResultName": "Converting reddit analysis to mktg assets",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1566594335,
+          "mode": "list",
+          "cachedResultName": "Reddit posts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY/edit#gid=1566594335"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Reddit post": "={{ $json['Reddit post'] }}",
+            "Title": "={{ $json.Title }}",
+            "Subreddit": "={{ $json.Subreddit }}",
+            "Reddit Summary": "={{ $json['Reddit Summary'] }}",
+            "Theme": "={{ $json.Theme }}",
+            "Points from each reddit post": "={{ $json['Points from each reddit post'] }}",
+            "Content theme ": "={{ $json['Content theme '] }}",
+            "Hooks and angles": "={{ $json['Hooks and angles'] }}",
+            "Blog post idea": "={{ $json.blog_post_idea }}",
+            "Linkedin post idea": "={{ $json.linkedin_idea }}",
+            "X post idea": "={{ $json.x_post_idea }}",
+            "YT short idea": "={{ $json.yt_short_idea }}"
+          },
+          "matchingColumns": [
+            "Reddit post"
+          ],
+          "schema": [
+            {
+              "id": "Reddit post",
+              "displayName": "Reddit post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Subreddit",
+              "displayName": "Subreddit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reddit Summary",
+              "displayName": "Reddit Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Theme",
+              "displayName": "Theme",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Points from each reddit post",
+              "displayName": "Points from each reddit post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Content theme ",
+              "displayName": "Content theme ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Hooks and angles",
+              "displayName": "Hooks and angles",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Blog post idea",
+              "displayName": "Blog post idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Linkedin post idea",
+              "displayName": "Linkedin post idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "X post idea",
+              "displayName": "X post idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "YT short idea",
+              "displayName": "YT short idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Linkedin post",
+              "displayName": "Linkedin post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Blog post",
+              "displayName": "Blog post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "X post",
+              "displayName": "X post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "YT short script",
+              "displayName": "YT short script",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Feedback",
+              "displayName": "Feedback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Updated post with feedback",
+              "displayName": "Updated post with feedback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        800,
+        220
+      ],
+      "id": "1bb209a3-d062-4930-922b-74537b9c93cf",
+      "name": "Google Sheets3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Q2cp9Pj98wDxvTr5",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-3.7-sonnet",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2100,
+        340
+      ],
+      "id": "7425d7ed-1338-4257-be81-c37be595d3b3",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "ivGoi3noYVsN6lRZ",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY",
+          "mode": "list",
+          "cachedResultName": "Converting reddit analysis to mktg assets",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1566594335,
+          "mode": "list",
+          "cachedResultName": "Reddit posts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY/edit#gid=1566594335"
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1000,
+        220
+      ],
+      "id": "a366bfd2-0869-495d-88b7-3d00d5c0523c",
+      "name": "Google Sheets4",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Q2cp9Pj98wDxvTr5",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a future-focused marketer and seasoned LinkedIn creator. \n\nWrite 3 thought leadership LinkedIn posts based on the following idea:\n\nYour content should be around - {{ $json['Linkedin post idea'] }}\n\n\nMake sure you write 3 posts for each idea from {{ $json['Linkedin post idea'] }}\n\nEach post sould be - 300 words long\n\n------\n\nMake sure \nUse the \"Insight Ecosystem\" content structure and the voice guide below to craft the posts:\n\n✍️ Brand Voice Guide:\nSpeak with directness, confident expertise, and clarity.\n\nAvoid jargon and overly academic language.\n\nWrite as if you're sharing hard-won insights with a peer who respects depth and nuance.\n\nUse punchy headers, smart structuring, and high-signal content—no fluff.\n\nSound like a practitioner, not a motivational speaker or corporate blog.\n\n🔧 Structure of Each Post (Insight Ecosystem Framework):\nHOOK (max 8 words):\nGrab attention with a human, non-salesy phrase addressing a pain point or curiosity trigger.\n\nTHESIS STATEMENT (Core Foundation):\nA paradigm-shifting insight that challenges conventional wisdom. Explain why this matters now.\n\nINSIGHT ARCHITECTURE (progressive flow):\nBreak the concept into 3-5 connected insights:\n\nPrinciple (what and why it matters)\n\nMini story or real-world example (1–3 sentences)\n\nDecision framework (if X, then Y)\n\nSignature phrase that captures the core idea\n\nContrast with outdated/common approach\n\nTACTICAL TRANSLATION:\nGive 1–2 specific use cases for B2B marketers, especially in CRM, email, or content ops.\n\nCLOSING CTA (non-salesy):\nEnd with a curiosity-piquing question or invite to explore the topic further.\n\nAdditional Instructions:\nCite credible sources or data where relevant (e.g., “according to Litmus,” “based on 3k+ CRM audits…”).\n\nUse language that feels precise but human (avoid fluff like “drive engagement” or “synergize alignment”).\n\nWrite in first person singular only.\n\nYour output should feel like a masterclass post from a sharp, articulate marketing thinker.\n\nAvoid giving data that is not real. Avoid creating your own case studies\n\nOutput format\n\n- Post theme\n- Angle \n- Type of post\n- Content \n- Write copy for image, carousel separately"
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        2100,
+        140
+      ],
+      "id": "6dfd1694-7262-48df-9544-bbd22ec88c0c",
+      "name": "Linkedin AI ",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a future-focused B2B marketer and experienced SEO content strategist.\nYou write educational, insight-rich blog posts that explain how modern marketers can use Vibe Marketing to solve current growth problems.\n\nUse the idea provided in {{ $json['Blog post idea'] }} as the core topic, and build on it using angles or supporting ideas from the hook and angle mentioned in the blog post idea \n\nThe goal of the blog post is to speak to startup founders, solo marketers, or early-stage B2B teams who feel like their content is underperforming, disconnected from intent, or overly tactical with no compounding value.\n\n✍️ Brand Voice\nFirst person singular voice only\n\nSmart, confident, and experience-driven tone\n\nAvoid jargon, fluff, or AI-like filler phrasing\n\nSound like you're teaching from lived experience\n\nUse punchy subheadings and direct, helpful language\n\nNo salesy CTA — end with a curiosity-driven prompt\n\n📚 Blog Structure\na. Headline options (give 5)\nEach headline should sound human, smart, and curiosity-driven\n\nNo generic SEO clickbait, but should be optimized for search intent\n\nb. Introduction (300 words)\nStart with a powerful pain point or contradiction\n\nShare why this topic matters right now (timing/relevance)\n\nFrame the post as solving a real-world growth block in B2B content/marketing\n\nTransition into the body by asking the right question: “So how do you fix this?”\n\nc. Main Content (500 words insight-driven answer)\nStructure the body with 3–5 progressive, interlinked sections\n\nEach section should include:\n\nPrinciple (what + why it matters)\n\nMini story or example\n\nSimple framework or takeaway\n\nContrast with the default way most teams are doing it wrong\n\nd. Conclusion (summary + invitation 200 words)\nSummarize the mental model or system you just shared\n\nRe-anchor the reader in the stakes\n\nEnd with an open-ended but sharp question that provokes reflection (not a CTA to buy)\n\n🔍 Additional Instructions\nUse credible sources when citing data — avoid making things up\n\nYou can refer to platforms/tools but don’t hard promote them\n\nAdd 1–2 use cases for marketers inside CRM, content ops, or email (make sure they are not made up and strictly no to made up data points)\n\nFinal length: ~1000 words\n\nOutput format:\n\n- Blog Title Options (5)\n- Final Title Used\n- Full blog post (with proper formatting and subheadings)\n- Place holder for image/ inforgaphics with prompts "
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1660,
+        860
+      ],
+      "id": "8e6159d0-84c9-4981-a9e7-9cd39ef7c478",
+      "name": "Blog post AI",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY",
+          "mode": "list",
+          "cachedResultName": "Converting reddit analysis to mktg assets",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1566594335,
+          "mode": "list",
+          "cachedResultName": "Reddit posts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY/edit#gid=1566594335"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Linkedin post": "={{ $json.cleanText }}",
+            "Reddit post": "={{ $json['Reddit post'] }}",
+            "Title": "={{ $json.Title }}",
+            "Subreddit": "={{ $json.Subreddit }}",
+            "Reddit Summary": "={{ $json['Reddit Summary'] }}",
+            "Theme": "={{ $json.Theme }}",
+            "Points from each reddit post": "={{ $json['Points from each reddit post'] }}",
+            "Content theme ": "={{ $json['Content theme '] }}",
+            "Hooks and angles": "={{ $json['Hooks and angles'] }}",
+            "Linkedin post idea": "={{ $json['Linkedin post idea'] }}",
+            "Blog post idea": "={{ $json['Blog post idea'] }}",
+            "X post idea": "={{ $json['X post idea'] }}",
+            "YT short idea": "={{ $json['YT short idea'] }}"
+          },
+          "matchingColumns": [
+            "Reddit post"
+          ],
+          "schema": [
+            {
+              "id": "Reddit post",
+              "displayName": "Reddit post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Subreddit",
+              "displayName": "Subreddit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reddit Summary",
+              "displayName": "Reddit Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Theme",
+              "displayName": "Theme",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Points from each reddit post",
+              "displayName": "Points from each reddit post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Content theme ",
+              "displayName": "Content theme ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Hooks and angles",
+              "displayName": "Hooks and angles",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Blog post idea",
+              "displayName": "Blog post idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Linkedin post idea",
+              "displayName": "Linkedin post idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "X post idea",
+              "displayName": "X post idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "YT short idea",
+              "displayName": "YT short idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Linkedin post",
+              "displayName": "Linkedin post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Blog post",
+              "displayName": "Blog post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "X post",
+              "displayName": "X post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "YT short script",
+              "displayName": "YT short script",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Feedback",
+              "displayName": "Feedback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Updated post with feedback",
+              "displayName": "Updated post with feedback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2940,
+        160
+      ],
+      "id": "a846713e-05f2-4929-8a96-cd3c2f1b81bd",
+      "name": "Google Sheets5",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Q2cp9Pj98wDxvTr5",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-3.7-sonnet",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1040
+      ],
+      "id": "1f1d9aeb-12c6-4b8f-a4ef-efd215eac5b1",
+      "name": "OpenRouter Chat Model3",
+      "credentials": {
+        "openRouterApi": {
+          "id": "ivGoi3noYVsN6lRZ",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        420
+      ],
+      "id": "78646dfe-ab89-4784-955d-c0bb0a76d241",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1420,
+        720
+      ],
+      "id": "73161462-e471-487c-9d22-46d0a06c4470",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n    let text = item.json.text;\n\n    // Remove Markdown-style headings\n    text = text.replace(/^#+\\s+/gm, ''); \n\n    // Remove unnecessary labels like \"undefined\"\n    text = text.replace(/\\bundefined\\b/g, '');\n\n    // Remove bold formatting (**bold text**)\n    text = text.replace(/\\*\\*(.*?)\\*\\*/g, '$1');\n\n    // Ensure double line breaks for paragraph separation\n    text = text.replace(/\\n{2,}/g, '\\n\\n').trim();\n\n    return {\n        json: {\n            cleanText: text\n        }\n    };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2460,
+        140
+      ],
+      "id": "4b508f14-c54f-4af6-8f29-3622b06e187e",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1780,
+        320
+      ],
+      "id": "840e3b9c-5295-4153-a0c5-1f003f654309",
+      "name": "Loop Over Items",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "mode": "combineBySql"
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        2660,
+        -140
+      ],
+      "id": "f9ac2cc1-5465-4a92-800b-882284c05ddb",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {
+          "includeUnpaired": true
+        }
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        2360,
+        820
+      ],
+      "id": "46336e6f-9761-4728-aecc-d3b6050ebd4b",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n    let text = item.json.text;\n\n    // Remove Markdown-style headings\n    text = text.replace(/^#+\\s+/gm, ''); \n\n    // Remove unnecessary labels like \"undefined\"\n    text = text.replace(/\\bundefined\\b/g, '');\n\n    // Remove bold formatting (**bold text**)\n    text = text.replace(/\\*\\*(.*?)\\*\\*/g, '$1');\n\n    // Ensure double line breaks for paragraph separation\n    text = text.replace(/\\n{2,}/g, '\\n\\n').trim();\n\n    return {\n        json: {\n            cleanedText: text\n        }\n    };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1980,
+        980
+      ],
+      "id": "fbe732f3-d5bc-4645-b484-7d276d909b87",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY",
+          "mode": "list",
+          "cachedResultName": "Converting reddit analysis to mktg assets",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1566594335,
+          "mode": "list",
+          "cachedResultName": "Reddit posts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY/edit#gid=1566594335"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Linkedin post": "=",
+            "Reddit post": "={{ $json['Reddit post'] }}",
+            "Title": "={{ $json.Title }}",
+            "Subreddit": "={{ $json.Subreddit }}",
+            "Reddit Summary": "={{ $json['Reddit Summary'] }}",
+            "Theme": "={{ $json.Theme }}",
+            "Points from each reddit post": "={{ $json['Points from each reddit post'] }}",
+            "Content theme ": "={{ $json['Content theme '] }}",
+            "Hooks and angles": "={{ $json['Hooks and angles'] }}",
+            "Linkedin post idea": "={{ $json['Linkedin post idea'] }}",
+            "Blog post idea": "={{ $json['Blog post idea'] }}",
+            "X post idea": "={{ $json['X post idea'] }}",
+            "YT short idea": "={{ $json['YT short idea'] }}",
+            "Blog post": "={{ $json.cleanedText }}"
+          },
+          "matchingColumns": [
+            "Reddit post"
+          ],
+          "schema": [
+            {
+              "id": "Reddit post",
+              "displayName": "Reddit post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Subreddit",
+              "displayName": "Subreddit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reddit Summary",
+              "displayName": "Reddit Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Theme",
+              "displayName": "Theme",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Points from each reddit post",
+              "displayName": "Points from each reddit post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Content theme ",
+              "displayName": "Content theme ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Hooks and angles",
+              "displayName": "Hooks and angles",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Blog post idea",
+              "displayName": "Blog post idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Linkedin post idea",
+              "displayName": "Linkedin post idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "X post idea",
+              "displayName": "X post idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "YT short idea",
+              "displayName": "YT short idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Linkedin post",
+              "displayName": "Linkedin post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Blog post",
+              "displayName": "Blog post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "X post",
+              "displayName": "X post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "YT short script",
+              "displayName": "YT short script",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Feedback",
+              "displayName": "Feedback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Updated post with feedback",
+              "displayName": "Updated post with feedback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2940,
+        780
+      ],
+      "id": "8830075d-a4da-4715-8ec9-38145f7cd011",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Q2cp9Pj98wDxvTr5",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1260,
+        1260
+      ],
+      "id": "5c10f12e-6879-4b5a-9013-ba09ec0d6edd",
+      "name": "Loop Over Items2"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n    let text = item.json.text;\n\n    // Remove Markdown-style headings\n    text = text.replace(/^#+\\s+/gm, ''); \n\n    // Remove unnecessary labels like \"undefined\"\n    text = text.replace(/\\bundefined\\b/g, '');\n\n    // Remove bold formatting (**bold text**)\n    text = text.replace(/\\*\\*(.*?)\\*\\*/g, '$1');\n\n    // Ensure double line breaks for paragraph separation\n    text = text.replace(/\\n{2,}/g, '\\n\\n').trim();\n\n    return {\n        json: {\n            cleanContent: text\n        }\n    };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2120,
+        1360
+      ],
+      "id": "5e6306cc-4496-41cd-991e-5c5230b9c180",
+      "name": "Code3"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {
+          "includeUnpaired": true
+        }
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        2700,
+        1300
+      ],
+      "id": "26d10fd5-c7f7-4976-9075-63e79fb49e9c",
+      "name": "Merge3"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY",
+          "mode": "list",
+          "cachedResultName": "Converting reddit analysis to mktg assets",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1566594335,
+          "mode": "list",
+          "cachedResultName": "Reddit posts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY/edit#gid=1566594335"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Linkedin post": "=",
+            "Reddit post": "={{ $json['Reddit post'] }}",
+            "Title": "={{ $json.Title }}",
+            "Subreddit": "={{ $json.Subreddit }}",
+            "Reddit Summary": "={{ $json['Reddit Summary'] }}",
+            "Theme": "={{ $json.Theme }}",
+            "Points from each reddit post": "={{ $json['Points from each reddit post'] }}",
+            "Content theme ": "={{ $json['Content theme '] }}",
+            "Hooks and angles": "={{ $json['Hooks and angles'] }}",
+            "Linkedin post idea": "={{ $json['Linkedin post idea'] }}",
+            "Blog post idea": "={{ $json['Blog post idea'] }}",
+            "X post idea": "={{ $json['X post idea'] }}",
+            "YT short idea": "={{ $json['YT short idea'] }}",
+            "Blog post": "=",
+            "YT short script": "={{ $json.cleanContent }}"
+          },
+          "matchingColumns": [
+            "Reddit post"
+          ],
+          "schema": [
+            {
+              "id": "Reddit post",
+              "displayName": "Reddit post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Subreddit",
+              "displayName": "Subreddit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reddit Summary",
+              "displayName": "Reddit Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Theme",
+              "displayName": "Theme",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Points from each reddit post",
+              "displayName": "Points from each reddit post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Content theme ",
+              "displayName": "Content theme ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Hooks and angles",
+              "displayName": "Hooks and angles",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Blog post idea",
+              "displayName": "Blog post idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Linkedin post idea",
+              "displayName": "Linkedin post idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "X post idea",
+              "displayName": "X post idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "YT short idea",
+              "displayName": "YT short idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Linkedin post",
+              "displayName": "Linkedin post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Blog post",
+              "displayName": "Blog post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "X post",
+              "displayName": "X post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "YT short script",
+              "displayName": "YT short script",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Feedback",
+              "displayName": "Feedback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Updated post with feedback",
+              "displayName": "Updated post with feedback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2940,
+        1300
+      ],
+      "id": "de7e0c04-f0d7-45ea-82b4-4fae1421209a",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Q2cp9Pj98wDxvTr5",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a future-focused B2B marketer and content strategist who specializes in teaching early-stage marketers how to use Vibe Marketing to escape tactical chaos and build systems with compounding impact.\n\nYou’re creating 3 short-form YouTube video scripts (YouTube Shorts) based on the idea provided in:\n{{ $json['YT post idea'] }}\n\nYour goal is to:\n\nTeach one meaningful insight per short\n\nFrame it with real-world relevance\n\nMake the viewer rethink something they’re doing wrong or backward\n\nDeliver it in your first-person, no-BS voice\n\n✍️ BRAND VOICE INSTRUCTIONS\nSpeak in first person singular only\n\nUse smart, experienced, and insight-led tone\n\nAvoid generic YouTube fluff, hype voice, or \"guru speak\"\n\nSound like a peer sharing hard-won truths, not an explainer bot\n\nKeep it tight, punchy, and high-signal\n\n🎯 STRUCTURE OF EACH YOUTUBE SHORT SCRIPT\nEach video should be ~30–60 seconds worth of script (75–120 words)\n\nScript Template:\nHook (1 line)\n\nChallenge, contradiction, or unexpected truth\n\nExample: “Most founders sabotage their content ops by over-planning.”\n\nContext (2–3 lines)\n\nThe real problem underneath\n\nWhy this matters now\n\nReal example or data point if applicable (only cite real sources)\n\nFix / Insight (3–5 lines)\n\nWhat you’ve learned from doing it the hard way\n\nWhat to do instead\n\nGive the viewer a new lens to think through\n\nClosing Loop (1 line)\n\nReframe or call out the cost of not fixing this\n\nNo pitch, just leave them thinking\n\nExample: “If your system still depends on your calendar, it’s not a system.”\n\n🧠 Content Guidelines\nShare real stories or systems you’ve used in CRM, content ops, newsletter workflows, or founder-led marketing\n\nDon’t make up data — only use real insights (e.g., “In the last 20 client audits…”)\n\nMention tools only when essential (don’t promote)\n\nUse a conversational but smart delivery tone (like a Loom rant with structure)\n\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        1480,
+        1360
+      ],
+      "id": "9a610621-87d4-41c2-88e5-f812ffff1c30",
+      "name": "YT script generator"
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-3.7-sonnet",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1580,
+        1580
+      ],
+      "id": "db84c216-3e25-4d94-b1fc-0703956c555a",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "ivGoi3noYVsN6lRZ",
+          "name": "OpenRouter account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain3",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reddit analysis ": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain3": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets3": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Linkedin AI ",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets4": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Linkedin AI ": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Blog post AI",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Blog post AI": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Reddit analysis ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Blog post AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Linkedin AI ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets5": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items2": {
+      "main": [
+        [],
+        [
+          {
+            "node": "YT script generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YT script generator": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "YT script generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8aefb85c-081c-4884-90c8-b4cd031d14bf",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "74f05c1cebd184a5d02e9c4c7deeeee0b4b4c089b73d63fe289d2b9014d64811"
+  },
+  "id": "9dYaCaU75tQlB9nZ",
+  "tags": []
+}
