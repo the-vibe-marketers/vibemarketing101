@@ -1,0 +1,598 @@
+{
+  "name": "Feedback loop",
+  "nodes": [
+    {
+      "parameters": {
+        "trigger": [
+          "message"
+        ],
+        "channelId": {
+          "__rl": true,
+          "value": "C08GJ3CG342",
+          "mode": "list",
+          "cachedResultName": "slacktrigger_n8n_blog"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.slackTrigger",
+      "typeVersion": 1,
+      "position": [
+        160,
+        -576
+      ],
+      "id": "6fa51e10-dc7a-4e69-97c1-046b938d7a1d",
+      "name": "Slack Trigger",
+      "webhookId": "c56df148-e222-439b-968c-dc78efdb878c",
+      "credentials": {
+        "slackApi": {
+          "id": "WHS3QO4uMprdnlil",
+          "name": "Slack API for blog"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY",
+          "mode": "list",
+          "cachedResultName": "Converting reddit analysis to mktg assets",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2103024983,
+          "mode": "list",
+          "cachedResultName": "Reddit posts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY/edit#gid=2103024983"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Feedback": "={{ $json.text }}",
+            "row_number": "2"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Reddit post",
+              "displayName": "Reddit post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reddit Summary",
+              "displayName": "Reddit Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Theme",
+              "displayName": "Theme",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Points from each reddit post",
+              "displayName": "Points from each reddit post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Linkedin idea",
+              "displayName": "Linkedin idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Blog post idea",
+              "displayName": "Blog post idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Brand voice",
+              "displayName": "Brand voice",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Linkedin post",
+              "displayName": "Linkedin post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Blog post",
+              "displayName": "Blog post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Feedback",
+              "displayName": "Feedback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Updated post with feedback",
+              "displayName": "Updated post with feedback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        768,
+        -576
+      ],
+      "id": "82abce5a-9f7e-4bb8-bade-d479e32743c0",
+      "name": "Google Sheets8",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Q2cp9Pj98wDxvTr5",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Make changes according to {{ $json.Feedback }} and append changes to {{ $json['Linkedin post'] }}  both posts Post 1 and 2 based on the feedback thoroughly {{ $json.Feedback }} \n\nBrand voice to follow while you make changes - {{ $json['Brand voice'] }}\n\nShare where you have made changes\n\nNote: Remove all hashtags while you share final version"
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1312,
+        -576
+      ],
+      "id": "78c93cce-5e45-4ab3-b139-5893330fe3a4",
+      "name": "Basic LLM Chain4",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-3.7-sonnet",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1408,
+        -352
+      ],
+      "id": "de8829d1-d727-4cd4-9980-11f68b823737",
+      "name": "OpenRouter Chat Model4",
+      "credentials": {
+        "openRouterApi": {
+          "id": "ivGoi3noYVsN6lRZ",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "789a9790-10ca-4d0d-ab66-ecf0c5a0c188",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "fc8eb17e-2b7a-4163-ab64-dcc58474553e",
+              "name": "user",
+              "value": "={{ $json.user }}",
+              "type": "string"
+            },
+            {
+              "id": "be757894-69c0-4f9d-9fab-12f35d0d504c",
+              "name": "Channel",
+              "value": "={{ $json.channel }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        496,
+        -576
+      ],
+      "id": "2246e65d-3c6e-49c7-9ba7-d8db69d8b44b",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY",
+          "mode": "list",
+          "cachedResultName": "Converting reddit analysis to mktg assets",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2103024983,
+          "mode": "list",
+          "cachedResultName": "Reddit posts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY/edit#gid=2103024983"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        992,
+        -576
+      ],
+      "id": "f3687c0b-0a5d-4839-95c9-61ccb71c7da9",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Q2cp9Pj98wDxvTr5",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY",
+          "mode": "list",
+          "cachedResultName": "Converting reddit analysis to mktg assets",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2103024983,
+          "mode": "list",
+          "cachedResultName": "Reddit posts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/139vd5OTmFbdhOO8CS1fhkdMR4UlH_i6TLmG8ClsD4HY/edit#gid=2103024983"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "2",
+            "Updated post with feedback": "={{ $json.text }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Reddit post",
+              "displayName": "Reddit post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Reddit Summary",
+              "displayName": "Reddit Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Theme",
+              "displayName": "Theme",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Points from each reddit post",
+              "displayName": "Points from each reddit post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Linkedin idea",
+              "displayName": "Linkedin idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Blog post idea",
+              "displayName": "Blog post idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Brand voice",
+              "displayName": "Brand voice",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Linkedin post",
+              "displayName": "Linkedin post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Blog post",
+              "displayName": "Blog post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Feedback",
+              "displayName": "Feedback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Updated post with feedback",
+              "displayName": "Updated post with feedback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1776,
+        -576
+      ],
+      "id": "086cd47f-d4dc-48d1-accb-b63085ef045e",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Q2cp9Pj98wDxvTr5",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C08L7HNKWMT",
+          "mode": "list",
+          "cachedResultName": "feedbacksocial"
+        },
+        "text": "=Here is the final version -  {{ $json['Updated post with feedback'] }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        2000,
+        -576
+      ],
+      "id": "14940572-9a2c-4d76-bce2-847ba527bdd2",
+      "name": "Slack",
+      "webhookId": "a18130e3-b3f8-45e1-b910-d3030679e8c6",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "Z3iU3FMA26rXK77z",
+          "name": "Slack account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Slack Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets8": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain4",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain4": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5dc320ee-aeff-4513-aecd-28de626960bf",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "74f05c1cebd184a5d02e9c4c7deeeee0b4b4c089b73d63fe289d2b9014d64811"
+  },
+  "id": "5uDsgEwRfjBFrnHx",
+  "tags": []
+}
